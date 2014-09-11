@@ -16,6 +16,12 @@
  *  sample client_id client_id_tag license
 */
 
+/*
+ *  Modifications made by Ben Bowler <ben@chew.tv>
+ *
+ *  Output should now be json format and gnid should now be returned
+ */
+
 /* GNSDK headers
  *
  * Define the modules your application needs.
@@ -486,10 +492,115 @@ _display_track_gdo(
 	)
 {
 	gnsdk_error_t		error		= GNSDK_SUCCESS;
+	// gnsdk_gdo_handle_t	id_gdo      = GNSDK_NULL;
 	gnsdk_gdo_handle_t	title_gdo	= GNSDK_NULL;
 	gnsdk_gdo_handle_t	album_gdo	= GNSDK_NULL;
 	gnsdk_gdo_handle_t	artist_gdo	= GNSDK_NULL;
+	// gnsdk_gdo_handle_t	credit_gdo	= GNSDK_NULL;
 	gnsdk_cstr_t		value		= GNSDK_NULL;
+
+	// printf("%s\n", track_gdo);
+    
+    /* Begin json structure */
+    printf("{ \n");
+
+   /* track GNID */
+	error = gnsdk_manager_gdo_value_get( track_gdo, GNSDK_GDO_VALUE_GNID, 1, &value );
+	if (GNSDK_SUCCESS == error)
+	{
+		printf( " '%s': '%s', \n", "id", value );
+
+		// gnsdk_manager_gdo_release(id_gdo);
+	}
+	else
+	{
+		_display_error(__LINE__, "gnsdk_manager_gdo_child_get()", error);
+	}
+    
+
+	// From docs
+	// /gnsdk-3.02.0.422o-20130108/docs/html/index.html#gnsdko_doxygen_html/context_maps.html
+
+
+	//   Track	 	
+ 	// GNSDK_GDO_CHILD_ARTISTS	Credited artist(s)
+ 	// GNSDK_GDO_CHILD_TITLE_OFFICIAL	The Official Title of a Track
+ 	// GNSDK_GDO_VALUE_GENRE_*	Genre classification of the Track Levels1-3
+ 	// GNSDK_GDO_VALUE_GNID	GNID. Gracenote identifier - a combination of the TUI and TUI Tag fields.
+ 	// GNSDK_GDO_VALUE_GNUID	GNUID. Gracenote Identifier
+ 	// GNSDK_GDO_VALUE_ORDINAL	The ordinal position of this Track in the Album
+ 	// GNSDK_GDO_VALUE_PRODUCTID	Product identifier
+ 	// GNSDK_GDO_VALUE_TUI	TUI. Title Unique Identifier. A Gracenote identifier.
+ 	// GNSDK_GDO_VALUE_TUI_TAG	TUI Tag. A hashed representation of the TUI that guarantees its authenticity.
+ 	// GNSDK_GDO_VALUE_YEAR	Year originally issued
+
+
+   /* track year */
+	error = gnsdk_manager_gdo_value_get( track_gdo, GNSDK_GDO_VALUE_PRODUCTID, 1, &value );
+	if (GNSDK_SUCCESS == error)
+	{
+		printf( " '%s': '%s', \n", "product_id", value );
+		
+		// gnsdk_manager_gdo_release(id_gdo);
+	}
+	else
+	{
+		_display_error(__LINE__, "gnsdk_manager_gdo_child_get()", error);
+	}
+
+	// /* Genres */
+ //   /* genre */
+	// error = gnsdk_manager_gdo_value_get( track_gdo, GNSDK_GDO_VALUE_GENRE, 1, &value );
+	// if (GNSDK_SUCCESS == error)
+	// {
+	// 	printf( " '%s': '%s', \n", "genre_1", value );
+		
+	// 	// gnsdk_manager_gdo_release(id_gdo);
+	// }
+	// else
+	// {
+	// 	_display_error(__LINE__, "gnsdk_manager_gdo_child_get()", error);
+	// }
+
+ //   /* genre */
+	// error = gnsdk_manager_gdo_value_get( track_gdo, GNSDK_GDO_VALUE_GENRE_2, 1, &value );
+	// if (GNSDK_SUCCESS == error)
+	// {
+	// 	printf( " '%s': '%s', \n", "genre_2", value );
+		
+	// 	// gnsdk_manager_gdo_release(id_gdo);
+	// }
+	// else
+	// {
+	// 	_display_error(__LINE__, "gnsdk_manager_gdo_child_get()", error);
+	// }
+
+ //   /* genre */
+	// error = gnsdk_manager_gdo_value_get( track_gdo, GNSDK_GDO_VALUE_GENRE_3, 1, &value );
+	// if (GNSDK_SUCCESS == error)
+	// {
+	// 	printf( " '%s': '%s', \n", "genre_3", value );
+		
+	// 	// gnsdk_manager_gdo_release(id_gdo);
+	// }
+	// else
+	// {
+	// 	_display_error(__LINE__, "gnsdk_manager_gdo_child_get()", error);
+	// }
+
+ //   /* track year */
+	// error = gnsdk_manager_gdo_value_get( track_gdo, GNSDK_GDO_VALUE_YEAR, 1, &value );
+	// if (GNSDK_SUCCESS == error)
+	// {
+	// 	printf( " '%s': '%s', \n", "year", value );
+		
+	// 	// gnsdk_manager_gdo_release(id_gdo);
+	// }
+	// else
+	// {
+	// 	_display_error(__LINE__, "gnsdk_manager_gdo_child_get()", error);
+	// }
+    
 
 	/* track Artist */
 	error = gnsdk_manager_gdo_child_get( track_gdo, GNSDK_GDO_CHILD_ARTIST, 1, &artist_gdo );
@@ -501,7 +612,7 @@ _display_track_gdo(
 			error = gnsdk_manager_gdo_value_get( title_gdo, GNSDK_GDO_VALUE_DISPLAY, 1, &value );
 			if (GNSDK_SUCCESS == error)
 			{
-				printf( "%16s %s\n", "Artist:", value );
+				printf( " '%s': '%s', \n", "artist", value );
 			}
 			else
 			{
@@ -530,7 +641,7 @@ _display_track_gdo(
 			error = gnsdk_manager_gdo_value_get( title_gdo, GNSDK_GDO_VALUE_DISPLAY, 1, &value );
 			if (GNSDK_SUCCESS == error)
 			{
-				printf( "%16s %s\n", "Album:", value );
+				printf( " '%s': '%s', \n", "album", value );
 			}
 			else
 			{
@@ -556,7 +667,7 @@ _display_track_gdo(
 		error = gnsdk_manager_gdo_value_get( title_gdo, GNSDK_GDO_VALUE_DISPLAY, 1, &value );
 		if (GNSDK_SUCCESS == error)
 		{
-			printf( "%16s %s\n", "Title:", value );
+			printf( " '%s': '%s' \n  }", "title", value ); // Includes end json structure
 		}
 		else
 		{
@@ -568,6 +679,31 @@ _display_track_gdo(
 	{
 		_display_error(__LINE__, "gnsdk_manager_gdo_child_get()", error);
 	}
+    
+    
+	/* track Label */
+	// error = gnsdk_manager_gdo_child_get( track_gdo, GNSDK_GDO_CHILD_CREDIT, 1, &credit_gdo );
+	// if (GNSDK_SUCCESS == error)
+	// {
+	// 	error = gnsdk_manager_gdo_value_get( credit_gdo, GNSDK_GDO_VALUE_DISPLAY, 1, &value );
+	// 	if (GNSDK_SUCCESS == error)
+	// 	{
+	// 		printf( " '%s': '%s', \n", "credit", value );
+	// 	}
+	// 	else
+	// 	{
+	// 		_display_error(__LINE__, "gnsdk_manager_gdo_value_get()", error);
+	// 	}
+	// 	gnsdk_manager_gdo_release(credit_gdo);
+	// }
+	// else
+	// {
+	// 	_display_error(__LINE__, "gnsdk_manager_gdo_child_get()", error);
+	// }
+    
+    
+    /* End json structure */
+    // printf("}");
 }
 
 static void
@@ -873,7 +1009,7 @@ _do_sample_musicid_stream(
 							/* We should now have our final, full track result. */
 							if (GNSDK_SUCCESS == error)
 							{
-								printf( "%16s\n", "Final track:");
+								// printf( "%16s\n", "Final track:");
 
 								_display_track_gdo(track_gdo);
 							}
