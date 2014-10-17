@@ -22,6 +22,13 @@
  *  Output should now be json format and gnid should now be returned
  */
 
+/*
+ *  Modifications made by  ZeroOne <we.are@zeroone.st>
+ *
+ *  gnid and product_id removeed from the output. Prettify json output a bit.
+ */
+
+
 /* GNSDK headers
  *
  * Define the modules your application needs.
@@ -505,17 +512,17 @@ _display_track_gdo(
     printf("{ \n");
 
    /* track GNID */
-	error = gnsdk_manager_gdo_value_get( track_gdo, GNSDK_GDO_VALUE_GNID, 1, &value );
-	if (GNSDK_SUCCESS == error)
-	{
-		printf( " '%s': '%s', \n", "id", value );
+	// error = gnsdk_manager_gdo_value_get( track_gdo, GNSDK_GDO_VALUE_GNID, 1, &value );
+	// if (GNSDK_SUCCESS == error)
+	// {
+	// 	printf( " '%s': '%s', \n", "id", value );
 
-		// gnsdk_manager_gdo_release(id_gdo);
-	}
-	else
-	{
-		_display_error(__LINE__, "gnsdk_manager_gdo_child_get()", error);
-	}
+	// 	// gnsdk_manager_gdo_release(id_gdo);
+	// }
+	// else
+	// {
+	// 	_display_error(__LINE__, "gnsdk_manager_gdo_child_get()", error);
+	// }
     
 
 	// From docs
@@ -535,18 +542,18 @@ _display_track_gdo(
  	// GNSDK_GDO_VALUE_YEAR	Year originally issued
 
 
-   /* track year */
-	error = gnsdk_manager_gdo_value_get( track_gdo, GNSDK_GDO_VALUE_PRODUCTID, 1, &value );
-	if (GNSDK_SUCCESS == error)
-	{
-		printf( " '%s': '%s', \n", "product_id", value );
+   /* track product_id */
+	// error = gnsdk_manager_gdo_value_get( track_gdo, GNSDK_GDO_VALUE_PRODUCTID, 1, &value );
+	// if (GNSDK_SUCCESS == error)
+	// {
+	// 	printf( " '%s': '%s', \n", "product_id", value );
 		
-		// gnsdk_manager_gdo_release(id_gdo);
-	}
-	else
-	{
-		_display_error(__LINE__, "gnsdk_manager_gdo_child_get()", error);
-	}
+	// 	// gnsdk_manager_gdo_release(id_gdo);
+	// }
+	// else
+	// {
+	// 	_display_error(__LINE__, "gnsdk_manager_gdo_child_get()", error);
+	// }
 
 	// /* Genres */
  //   /* genre */
@@ -667,7 +674,7 @@ _display_track_gdo(
 		error = gnsdk_manager_gdo_value_get( title_gdo, GNSDK_GDO_VALUE_DISPLAY, 1, &value );
 		if (GNSDK_SUCCESS == error)
 		{
-			printf( " '%s': '%s' \n  }", "title", value ); // Includes end json structure
+			printf( " '%s': '%s'", "title", value ); // Includes end json structure
 		}
 		else
 		{
@@ -701,9 +708,9 @@ _display_track_gdo(
 	// 	_display_error(__LINE__, "gnsdk_manager_gdo_child_get()", error);
 	// }
     
-    
-    /* End json structure */
-    // printf("}");
+	printf("\n}\n");    
+  /* End json structure */
+  // printf("}");
 }
 
 static void
