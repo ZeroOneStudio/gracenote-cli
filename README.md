@@ -15,7 +15,7 @@ Just follow [the link](https://developer.gracenote.com/) and get it there.
 * Run `make`
 * Use `./sample 'CLIENT ID' 'CLIENT TAG' ./license.txt ./data/05-Hummingbird-sample.wav`
 
-If everything is fine, you should see the followuing output:
+If everything is fine, you should see the following output:
 
 ```bash
 { 
