@@ -18,9 +18,5 @@ Just follow [the link](https://developer.gracenote.com/) and get it there.
 If everything is fine, you should see the followuing output:
 
 ```bash
-{ 
- 'artist': 'Wilco',
- 'album': 'A Ghost is Born',
- 'title': 'Hummingbird'
-}
+{"artist": "Wilco", "album": "A Ghost is Born", "title": "Hummingbird"}
 ```

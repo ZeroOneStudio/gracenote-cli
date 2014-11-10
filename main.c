@@ -509,7 +509,7 @@ _display_track_gdo(
 	// printf("%s\n", track_gdo);
     
     /* Begin json structure */
-    printf("{ \n");
+    printf("{");
 
    /* track GNID */
 	// error = gnsdk_manager_gdo_value_get( track_gdo, GNSDK_GDO_VALUE_GNID, 1, &value );
@@ -619,7 +619,7 @@ _display_track_gdo(
 			error = gnsdk_manager_gdo_value_get( title_gdo, GNSDK_GDO_VALUE_DISPLAY, 1, &value );
 			if (GNSDK_SUCCESS == error)
 			{
-				printf( " '%s': '%s', \n", "artist", value );
+				printf( "\"%s\": \"%s\", ", "artist", value );
 			}
 			else
 			{
@@ -648,7 +648,7 @@ _display_track_gdo(
 			error = gnsdk_manager_gdo_value_get( title_gdo, GNSDK_GDO_VALUE_DISPLAY, 1, &value );
 			if (GNSDK_SUCCESS == error)
 			{
-				printf( " '%s': '%s', \n", "album", value );
+				printf( "\"%s\": \"%s\", ", "album", value );
 			}
 			else
 			{
@@ -674,7 +674,7 @@ _display_track_gdo(
 		error = gnsdk_manager_gdo_value_get( title_gdo, GNSDK_GDO_VALUE_DISPLAY, 1, &value );
 		if (GNSDK_SUCCESS == error)
 		{
-			printf( " '%s': '%s'", "title", value ); // Includes end json structure
+			printf( "\"%s\": \"%s\"", "title", value ); // Includes end json structure
 		}
 		else
 		{
@@ -708,7 +708,7 @@ _display_track_gdo(
 	// 	_display_error(__LINE__, "gnsdk_manager_gdo_child_get()", error);
 	// }
     
-	printf("\n}\n");    
+	printf("}");    
   /* End json structure */
   // printf("}");
 }
