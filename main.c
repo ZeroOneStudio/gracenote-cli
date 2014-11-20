@@ -1087,6 +1087,7 @@ _musicidstream_result_available_callback(
 		}
 		else
 		{
+			printf("[");
 			for(i = 1; i <= count; i++)
 			{
 				// printf("\n%d albums found for the input.\n", count);
@@ -1107,10 +1108,14 @@ _musicidstream_result_available_callback(
 					// printf( "%16s\n", "Album result: 1");
 
 					_display_album_gdo(album_gdo);
-					printf("\n");
+					if (i != count)
+					{
+						printf(",");
+					}
 					gnsdk_manager_gdo_release(album_gdo);
 				}
 			}
+			printf("]");
 		}
 	}
 
