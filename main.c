@@ -54,6 +54,7 @@ _init_gnsdk(
 	const char*          client_app_version,
 	const char*          license_path,
 	int                  use_local,
+	const char*					 file_path,
 	gnsdk_user_handle_t* p_user_handle
 	);
 
@@ -92,6 +93,7 @@ _musicidstream_completed_with_error_callback(
 	);
 
 /* Local data */
+// static gnsdk_cstr_t s_audio_file   = "../../sample_data/teen_spirit_14s.wav";
 static gnsdk_cstr_t s_gdb_location = "../../sample_data/sample_db";
 
 /******************************************************************
@@ -107,7 +109,7 @@ main(int argc, char* argv[])
 	const char*         client_id_tag      = NULL;
 	const char*         client_app_version = "1.0.0.0"; /* Version of your application */
 	const char*         license_path       = NULL;
-	static gnsdk_cstr_t s_audio_file       = NULL;
+	const char*	        file_path          = NULL;
 	int                 use_local          = -1;
 	int                 rc                 = 0;
 
@@ -116,7 +118,7 @@ main(int argc, char* argv[])
 		client_id     = argv[1];
 		client_id_tag = argv[2];
 		license_path  = argv[3];
-		s_audio_file  = argv[5];
+		file_path     = argv[5];
 		if (!strcmp(argv[4], "online"))
 		{
 			use_local = 0;
@@ -135,12 +137,13 @@ main(int argc, char* argv[])
 				client_app_version,
 				license_path,
 				use_local,
+				file_path,
 				&user_handle
 				);
 			if (0 == rc)
 			{
 				/* Perform a sample audio stream query */
-				_do_sample_musicid_stream(user_handle, s_audio_file);
+				_do_sample_musicid_stream(user_handle, file_path);
 
 				/* Clean up and shutdown */
 				_shutdown_gnsdk(user_handle);
@@ -149,7 +152,7 @@ main(int argc, char* argv[])
 	}
 	if (argc != 6 || use_local == -1)
 	{
-		printf("\nUsage:\n%s clientid clientidtag license [local|online]\n", argv[0]);
+		printf("\nUsage:\n%s clientid clientidtag license [local|online] file\n", argv[0]);
 		rc = -1;
 	}
 
@@ -360,6 +363,26 @@ _display_embedded_db_info(void)
 
 /******************************************************************
  *
+ *    _DISPLAY_GNSDK_PRODUCT_INFO
+ *
+ *    Display product version information
+ *
+ ******************************************************************/
+// static void
+// _display_gnsdk_product_info(void)
+// {
+// 	/* Display GNSDK Version infomation */
+// 	printf(
+// 		"\nGNSDK Product Version    : %s \t(built %s)\n",
+// 		gnsdk_manager_get_product_version(),
+// 		gnsdk_manager_get_build_date()
+// 	);
+
+// }  /* _display_gnsdk_product_info() */
+
+
+/******************************************************************
+ *
  *    _ENABLE_LOGGING
  *
  *  Enable logging for the SDK. Not used by Sample App. This helps
@@ -470,6 +493,7 @@ _init_gnsdk(
 	const char*          client_app_version,
 	const char*          license_path,
 	int                  use_local,
+	const char*					 file_path,
 	gnsdk_user_handle_t* p_user_handle
 	)
 {
@@ -480,7 +504,7 @@ _init_gnsdk(
 
 
 	/* Display GNSDK Product Version Info */
-	/* _display_gnsdk_product_info(); */
+	// _display_gnsdk_product_info();
 
 	/* Initialize the GNSDK Manager */
 	error = gnsdk_manager_initialize(
@@ -672,25 +696,110 @@ _shutdown_gnsdk(
 
 /***************************************************************************
  *
- *    _display_track_info_json
+ *    _DISPLAY_TRACK_GDO
  *
  ***************************************************************************/
-
 static void
-_display_track_info_json(
+_display_track_gdo(
 	gnsdk_gdo_handle_t track_gdo
 	)
 {
-	gnsdk_error_t		error		= GNSDK_SUCCESS;
-	gnsdk_gdo_handle_t	title_gdo	= GNSDK_NULL;
-	gnsdk_gdo_handle_t	artist_gdo	= GNSDK_NULL;
-	gnsdk_cstr_t		value		= GNSDK_NULL;
+	gnsdk_error_t      error     = GNSDK_SUCCESS;
+	gnsdk_gdo_handle_t title_gdo = GNSDK_NULL;
+	gnsdk_cstr_t       value     = GNSDK_NULL;
+	// gnsdk_cstr_t       value_2     = GNSDK_NULL;
 
-  /* Begin json structure */
-  printf("{");
+	/* Track Title */
+	error = gnsdk_manager_gdo_child_get( track_gdo, GNSDK_GDO_CHILD_TITLE_OFFICIAL, 1, &title_gdo );
+	if (GNSDK_SUCCESS == error)
+	{
+		error = gnsdk_manager_gdo_value_get( title_gdo, GNSDK_GDO_VALUE_DISPLAY, 1, &value );
+		if (GNSDK_SUCCESS == error)
+		{
+			printf( "\"%s\": \"%s\"", "track", value );
+		}
+		else
+		{
+			_display_last_error(__LINE__);
+		}
+		gnsdk_manager_gdo_release(title_gdo);
+	}
+	else
+	{
+		_display_last_error(__LINE__);
+	}
+	
+	/* Track number on album. */
+	// error = gnsdk_manager_gdo_value_get( track_gdo, GNSDK_GDO_VALUE_TRACK_NUMBER, 1, &value_1 );
+	// if (GNSDK_SUCCESS == error)
+	// {
+	// 	printf( "%26s %s\n", "Track number:", value_1 );
+	// }
+	// else
+	// {
+	// 	_display_last_error(__LINE__);
+	// }
 
-	/* Artist Title */
-	error = gnsdk_manager_gdo_child_get( track_gdo, GNSDK_GDO_CHILD_ARTIST, 1, &artist_gdo );
+	/* Track duration. */
+	// error = gnsdk_manager_gdo_value_get( track_gdo, GNSDK_GDO_VALUE_DURATION, 1, &value_1 );
+	// if (GNSDK_SUCCESS == error)
+	// {
+	// 	error = gnsdk_manager_gdo_value_get( track_gdo, GNSDK_GDO_VALUE_DURATION_UNITS, 1, &value_2 );
+	// 	if (GNSDK_SUCCESS == error)
+	// 	{
+	// 		printf( "%26s %s %s\n", "Track duration:", value_1, value_2 );
+	// 	}
+	// 	else
+	// 	{
+	// 		_display_last_error(__LINE__);
+	// 	}
+	// }
+	// else
+	// {
+	// 	_display_last_error(__LINE__);
+	// }
+
+	/* Position in track where the fingerprint matched. */
+	// error = gnsdk_manager_gdo_value_get( track_gdo, GNSDK_GDO_VALUE_MATCH_POSITION_MS, 1, &value_1 );
+	// if (GNSDK_SUCCESS == error)
+	// {
+	// 	printf( "%26s %s ms\n", "Match position:", value_1 );
+	// }
+	// else
+	// {
+	// 	_display_last_error(__LINE__);
+	// }
+
+	/* Duration of the matched fingerprint. */
+	// error = gnsdk_manager_gdo_value_get( track_gdo, GNSDK_GDO_VALUE_MATCH_DURATION_MS, 1, &value_1 );
+	// if (GNSDK_SUCCESS == error)
+	// {
+	// 	printf( "%26s %s ms\n", "Match duration:", value_1 );
+	// }
+
+}  /* _display_track_gdo() */
+
+
+/***************************************************************************
+ *
+ *    _DISPLAY_ALBUM_GDO
+ *
+ ***************************************************************************/
+static void
+_display_album_gdo(
+	gnsdk_gdo_handle_t album_gdo
+	)
+{
+	gnsdk_error_t      error     = GNSDK_SUCCESS;
+	gnsdk_gdo_handle_t title_gdo = GNSDK_NULL;
+	gnsdk_gdo_handle_t track_gdo = GNSDK_NULL;
+	gnsdk_gdo_handle_t artist_gdo = GNSDK_NULL;
+	gnsdk_cstr_t       value     = GNSDK_NULL;
+	
+	printf("{");
+
+	/* Artist Title */ 
+	error = gnsdk_manager_gdo_child_get( album_gdo, GNSDK_GDO_CHILD_ARTIST, 1, &artist_gdo );
 	if (GNSDK_SUCCESS == error)
 	{
 		error = gnsdk_manager_gdo_child_get( artist_gdo, GNSDK_GDO_CHILD_NAME_OFFICIAL, 1, &title_gdo );
@@ -718,14 +827,35 @@ _display_track_info_json(
 		_display_last_error(__LINE__);
 	}
 
+
 	/* Album Title */
-	error = gnsdk_manager_gdo_child_get( track_gdo, GNSDK_GDO_CHILD_TITLE_OFFICIAL, 1, &title_gdo );
+	error = gnsdk_manager_gdo_child_get( album_gdo, GNSDK_GDO_CHILD_TITLE_OFFICIAL, 1, &title_gdo );
 	if (GNSDK_SUCCESS == error)
 	{
 		error = gnsdk_manager_gdo_value_get( title_gdo, GNSDK_GDO_VALUE_DISPLAY, 1, &value );
 		if (GNSDK_SUCCESS == error)
 		{
 			printf( "\"%s\": \"%s\", ", "album", value );
+			
+			/* Matched track number. */
+			error = gnsdk_manager_gdo_value_get( album_gdo, GNSDK_GDO_VALUE_TRACK_MATCHED_NUM, 1, &value );
+			if (GNSDK_SUCCESS == error)
+			{
+				error = gnsdk_manager_gdo_child_get( album_gdo, GNSDK_GDO_CHILD_TRACK_MATCHED, 1, &track_gdo );
+				if (GNSDK_SUCCESS == error)
+				{
+					_display_track_gdo(track_gdo);
+					gnsdk_manager_gdo_release(track_gdo);
+				}
+				else
+				{
+					_display_last_error(__LINE__);
+				}
+			}
+			else
+			{
+				_display_last_error(__LINE__);
+			}
 		}
 		else
 		{
@@ -738,28 +868,9 @@ _display_track_info_json(
 		_display_last_error(__LINE__);
 	}
 
-	/* Track Title */
-	error = gnsdk_manager_gdo_child_get( track_gdo, GNSDK_GDO_CHILD_TITLE_OFFICIAL, 1, &title_gdo );
-	if (GNSDK_SUCCESS == error)
-	{
-		error = gnsdk_manager_gdo_value_get( title_gdo, GNSDK_GDO_VALUE_DISPLAY, 1, &value );
-		if (GNSDK_SUCCESS == error)
-		{
-			printf( "\"%s\": \"%s\"", "title", value );
-		}
-		else
-		{
-			_display_last_error(__LINE__);
-		}
-		gnsdk_manager_gdo_release(title_gdo);
-	}
-	else
-	{
-		_display_last_error(__LINE__);
-	}
-    
-  printf("}");    
-}
+	printf("}");
+	
+}  /* _display_album_gdo() */
 
 /***************************************************************************
  *
@@ -882,7 +993,7 @@ _do_sample_musicid_stream(
 	gnsdk_error_t                        error          = GNSDK_SUCCESS;
 	int                                  rc             = 0;
 
-	/* printf("\n*****Sample MID-Stream Query*****\n"); */
+	// printf("\n*****Sample MID-Stream Query*****\n");
 
 	/* MusicId-Stream requires callbacks to receive identification results.
 	** He we set the various callbacks for results ands status.
@@ -929,12 +1040,12 @@ _musicidstream_identifying_status_callback(
 	gnsdk_bool_t*                            pb_abort
 	)
 {
-	/* printf("\n%s: status = %d\n\n", __FUNCTION__, status); */
+	// printf("\n%s: status = %d\n\n", __FUNCTION__, status);
 	/* This sample chooses to stop the audio processing when the identification
 	** is complete so it stops feeding in audio */
 	if (status == gnsdk_musicidstream_identifying_ended)
 	{
-		/* printf("\n%s aborting\n\n", __FUNCTION__); */
+		// printf("\n%s aborting\n\n", __FUNCTION__);
 		*pb_abort = GNSDK_TRUE;
 	}
 
@@ -953,9 +1064,10 @@ _musicidstream_result_available_callback(
 	gnsdk_bool_t*                        pb_abort
 	)
 {
-	gnsdk_gdo_handle_t track_gdo = GNSDK_NULL;
+	gnsdk_gdo_handle_t album_gdo = GNSDK_NULL;
 	gnsdk_uint32_t     count     = 0;
 	gnsdk_error_t      error     = GNSDK_SUCCESS;
+	int                i;
 
 	/* See how many albums were found. */
 	error = gnsdk_manager_gdo_child_count(
@@ -969,23 +1081,35 @@ _musicidstream_result_available_callback(
 	}
 	else
 	{
-		if (count != 0)
+		if (count == 0)
 		{
-			/* we display first album result */
-			error = gnsdk_manager_gdo_child_get(
-				response_gdo,
-				GNSDK_GDO_CHILD_ALBUM,
-				1,
-				&track_gdo
-				);
-			if (GNSDK_SUCCESS != error)
+			printf("\nNo albums found for the input.\n");
+		}
+		else
+		{
+			for(i = 1; i <= count; i++)
 			{
-				_display_last_error(__LINE__);
-			}
-			else
-			{
-				_display_track_info_json(track_gdo);
-				gnsdk_manager_gdo_release(track_gdo);
+				// printf("\n%d albums found for the input.\n", count);
+
+				/* we display first album result */
+				error = gnsdk_manager_gdo_child_get(
+					response_gdo,
+					GNSDK_GDO_CHILD_ALBUM,
+					i,
+					&album_gdo
+					);
+				if (GNSDK_SUCCESS != error)
+				{
+					_display_last_error(__LINE__);
+				}
+				else
+				{
+					// printf( "%16s\n", "Album result: 1");
+
+					_display_album_gdo(album_gdo);
+					printf("\n");
+					gnsdk_manager_gdo_release(album_gdo);
+				}
 			}
 		}
 	}
